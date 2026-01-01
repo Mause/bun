@@ -133,7 +133,7 @@ else()
   else()
     find_llvm_command(CMAKE_STRIP llvm-strip)
   endif()
-  find_llvm_command(CMAKE_RANLIB llvm-ranlib)
+  set(CMAKE_RANLIB "${NDK_BIN}/llvm-ranlib")
   if(LINUX)
     set(LLD_PROGRAM "${NDK_BIN}/ld.lld")
     # Ensure vendor dependencies use lld instead of ld
