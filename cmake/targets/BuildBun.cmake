@@ -1136,7 +1136,7 @@ if(LINUX)
   endif()
 
   target_link_options(${bun} PUBLIC
-    --ld-path=${LLD_PROGRAM}
+    --ld-path="${LLD_PROGRAM}-FROGS"
     -fno-pic
     -Wl,-no-pie
     -Wl,--as-needed
