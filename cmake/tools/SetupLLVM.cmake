@@ -80,6 +80,7 @@ macro(find_llvm_command variable command)
     COMMAND ${commands}
     PATHS ${LLVM_PATHS}
     VERSION ">=${LLVM_VERSION_MAJOR}.1.0 <${LLVM_VERSION_NEXT_MAJOR}.0.0"
+    REQUIRED
   )
   list(APPEND CMAKE_ARGS -D${variable}=${${variable}})
 endmacro()
@@ -130,7 +131,7 @@ else()
   endif()
   find_llvm_command(CMAKE_RANLIB llvm-ranlib)
   if(LINUX)
-    find_llvm_command(LLD_PROGRAM ld.lld)
+    set(LLD_PROGRAM /home/builder/.termux-build/_cache/android-r29-api-24-v3/bin/ld.lld)
     # Ensure vendor dependencies use lld instead of ld
     list(APPEND CMAKE_ARGS -DCMAKE_EXE_LINKER_FLAGS=--ld-path=${LLD_PROGRAM})
     list(APPEND CMAKE_ARGS -DCMAKE_SHARED_LINKER_FLAGS=--ld-path=${LLD_PROGRAM})
