@@ -22,6 +22,8 @@ const Libc = enum {
     default,
     /// musl libc
     musl,
+    /// bionic libc
+    android,
 
     /// npm package name, `@oven-sh/bun-{os}-{arch}`
     pub fn npmName(this: Libc) []const u8 {
@@ -32,9 +34,11 @@ const Libc = enum {
     }
 
     pub fn format(self: @This(), writer: *std.Io.Writer) std.Io.Writer.Error!void {
-        if (self == .musl) {
-            try writer.writeAll("-musl");
-        }
+        try writer.writeAll(switch (this) {
+            .default => "",
+            .musl => "-musl",
+            .android => "-android",
+        })
     }
 };
 
@@ -364,6 +368,10 @@ pub fn tryFrom(input_: []const u8) ParseError!CompileTarget {
             this.libc = .musl;
             found_libc = true;
             continue;
+        } else if (strings.eqlComptime(token, "android")) {
+            this.libc = .bionic;
+            found_libc = true;
+            continue;
         } else {
             return error.UnsupportedTarget;
         }
@@ -411,6 +419,7 @@ pub fn from(input_: []const u8) CompileTarget {
                         !strings.eqlComptime(token, "modern") and
                         !strings.eqlComptime(token, "baseline") and
                         !strings.eqlComptime(token, "musl") and
+                        !strings.eqlComptime(token, "android") and
                         !(strings.hasPrefixComptime(token, "v1.") or strings.hasPrefixComptime(token, "v0.")))
                     {
                         unsupported_token = token;
