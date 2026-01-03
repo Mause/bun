@@ -59,7 +59,16 @@ extern "C" ssize_t posix_spawn_bun(
     int res = 0, cs = 0;
     sigfillset(&blockall);
     sigprocmask(SIG_SETMASK, &blockall, &oldmask);
+#ifndef __ANDROID__
     pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &cs);
+#else
+    {
+        sigset_t pthread_cancel_block;
+        sigemptyset(&pthread_cancel_block);
+        sigaddset(&pthread_cancel_block, SIGUSR2);
+        sigprocmask(SIG_BLOCK, &pthread_cancel_block, NULL);
+    }
+#endif
     pid_t child = vfork();
 
     const auto childFailed = [&]() -> ssize_t {
@@ -196,7 +205,16 @@ extern "C" ssize_t posix_spawn_bun(
     }
 
     sigprocmask(SIG_SETMASK, &oldmask, 0);
+#ifndef __ANDROID__
     pthread_setcancelstate(cs, 0);
+#else
+    {
+        sigset_t pthread_cancel_block;
+        sigemptyset(&pthread_cancel_block);
+        sigaddset(&pthread_cancel_block, SIGUSR2);
+        sigprocmask(SIG_UNBLOCK, &pthread_cancel_block, NULL);
+    }
+#endif
 
     return res;
 }
