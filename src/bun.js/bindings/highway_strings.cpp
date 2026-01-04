@@ -81,7 +81,7 @@ size_t IndexOfAnyCharImpl(const uint8_t* HWY_RESTRICT text, size_t text_len, con
     } else {
         ASSERT(chars_len <= 16);
         constexpr size_t kMaxPreloadedChars = 16;
-        hn::Vec<D8> char_vecs[kMaxPreloadedChars];
+        hn::Vec<hn::Vec<D8>> char_vecs(kMaxPreloadedChars);
         const size_t num_chars_to_preload = std::min(chars_len, kMaxPreloadedChars);
         for (size_t c = 0; c < num_chars_to_preload; ++c) {
             char_vecs[c] = hn::Set(d, chars[c]);
